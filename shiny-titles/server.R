@@ -8,19 +8,20 @@
 #
 
 library(shiny)
+library(DT)
+
+# Load the metadata from S3 bucket
+# install.packages("aws.s3")
+library(aws.s3)
+titles <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
+
+data(iris)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+    
+    observeEvent(input$s3url, output$table <- "loaded"  ) # TODO: fix me
 
-    output$distPlot <- renderPlot({
-
-        # generate bins based on input$bins from ui.R
-        x    <- faithful[, 2]
-        bins <- seq(min(x), max(x), length.out = input$bins + 1)
-
-        # draw the histogram with the specified number of bins
-        hist(x, breaks = bins, col = 'darkgray', border = 'white')
-
-    })
+    output$table <- renderDataTable(iris)
 
 })
