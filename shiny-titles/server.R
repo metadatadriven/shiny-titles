@@ -47,7 +47,7 @@ library(git2r)
 
 # define location of the titles metadata file
 # CHANGE THIS DEFINITION IF FILE MOVES, ETC.
-metafile <- "/mnt/code/metadata/titles.csv"
+metafile <- "/mnt/code/metadata/Titles.csv"
 
 # define the repo object which is used for git functions
 repo <- repository("/mnt/code")
@@ -55,14 +55,11 @@ repo <- repository("/mnt/code")
 #load the metadata from the (git repo) file system
 #titlesraw <- read.csv(file = metafile)
 
-# Load the metadata from S3 bucket
-titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
-#titles <- titlesraw %>%
-#  select(!starts_with('length'))
-
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
+  
+  
   
   # reactive value used for the log messages
   log <- reactiveValues(msg = NULL)
@@ -72,10 +69,15 @@ shinyServer(function(input, output) {
     paste(log$msg, message, sep="\n")
   }
 
+  # Load the CSV file from S3
+  titlesraw = s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
+  
+  
   # make the titles table editable in the UI  
   output$table <- DT::renderDataTable({
     datatable(titlesraw %>% 
                 select(!starts_with('length')), 
+              selection = 'none',
               editable=TRUE)} ) 
 
   # error dialog displayed when no commit message
@@ -86,10 +88,25 @@ shinyServer(function(input, output) {
     )
   }
   
+  # proxy table used by the cell-edit observer
+  # see https://github.com/rstudio/DT/pull/480
+  
+  proxy = dataTableProxy('titlesraw')
+  
+  # observe any changes to the table..(cell edits)
+  observeEvent( input$table_cell_edit, {
+    info = input$table_cell_edit
+    str(info)
+    i = info$row
+    j = info$col
+    v = info$value
+    titlesraw[i,j] <<- DT::coerceValue(v, titlesraw[i,j])
+    replaceData(proxy, titlesraw, resetPaging = FALSE)
+  })
   
   # process the Sync button on the Save tab
   observeEvent( input$Sync, {
-    if (is.null(input$msg) || (input$msg == '')) {
+    if (is.null(input$s3uri) || (input$s3uri == '')) {
       showModal(noCommitDialog())
     } else {
       # there is a commit message so save dataset and commit
@@ -104,7 +121,9 @@ shinyServer(function(input, output) {
       
       # write to s3 bucket
       log$msg <- add_log("Writing to S3 bucket")
-      s3write_using( titlesraw, FUN=write.csv, bucket="titles-metadata", object="Titles.csv")
+#      s3write_using( titlesraw, FUN=write.csv, bucket="titles-metadata", object="Titles.csv")
+      s3write_using( titlesraw, FUN=write.csv, object=input$s3uri)
+      
       log$msg <- add_log("Done")
     }
   })
