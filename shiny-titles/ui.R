@@ -1,3 +1,33 @@
+#/*****************************************************************************\
+#         O
+#        /
+#   O---O     _  _ _  _ _  _  _|
+#        \ \/(/_| (_|| | |(/_(_|
+#         O
+# ______________________________________________________________________________          
+# Sponsor              : Domino
+# Compound             : Xanomeline
+# Study                : H2QMCLZZT
+# Analysis             : n/a
+# Program              : server.r
+# Purpose              : Shiny UI for titles metadata editor 
+#_______________________________________________________________________________                            
+# DESCRIPTION
+#                           
+# Input files: none
+#                             
+# Output files: none
+#                             
+# Utility functions:
+# 
+# Assumptions:
+# - see server.r
+#
+#_______________________________________________________________________________
+# PROGRAM HISTORY
+# 24aug2022 |	Stuart Malcolm	| Original
+#/*****************************************************************************\
+
 #
 # This is the user-interface definition of a Shiny web application. You can
 # run the application by clicking 'Run App' above.
@@ -19,7 +49,7 @@ shinyUI(
                         )),
                tabPanel("Save", 
                         fluidPage(
-                          textInput("path", "Local path", value = "/mnt/code/metadata/Titles.csv"),
+                          textInput("path", "Local path", value = "/mnt/code/metadata/titles.csv"),
                           textInput("msg", "Commit message"),
                           actionButton("Sync", "Commit and Push"),
                           verbatimTextOutput("info")

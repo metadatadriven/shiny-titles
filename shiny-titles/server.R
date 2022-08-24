@@ -1,27 +1,65 @@
+#/*****************************************************************************\
+#         O
+#        /
+#   O---O     _  _ _  _ _  _  _|
+#        \ \/(/_| (_|| | |(/_(_|
+#         O
+# ______________________________________________________________________________          
+# Sponsor              : Domino
+# Compound             : Xanomeline
+# Study                : H2QMCLZZT
+# Analysis             : n/a
+# Program              : server.r
+# Purpose              : Shiny server for titles metadata editor 
+#_______________________________________________________________________________                            
+# DESCRIPTION
+#                           
+# Input files: /metadata/titles.csv
+#                             
+# Output files: /metadata/titles.csv
+#                             
+# Utility functions:
+# 
+# Assumptions:
+# - titles.csv file exists in valid format (no checking done)
+# - file is in git repo and permissions exist to commit and push
+#
+#_______________________________________________________________________________
+# PROGRAM HISTORY
+# 24aug2022 |	Stuart Malcolm	| Original
+#/*****************************************************************************\
+
 #
 # This is the server logic of a Shiny web application. You can run the
 # application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
 #
 
 library(shiny)
 library(DT)
 library(dplyr)
 library(aws.s3)
+library(git2r)
+
+# at startup..
+
+# define location of the titles metadata file
+# CHANGE THIS DEFINITION IF FILE MOVES, ETC.
+metafile <- "/mnt/code/metadata/titles.csv"
+
+# define the repo object which is used for git functions
+repo <- repository("/mnt/code")
+
+#load the metadata from the (git repo) file system
+titlesraw <- read.csv(file = metafile)
 
 # Load the metadata from S3 bucket
-titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
-
+#titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
 #titles <- titlesraw %>%
 #  select(!starts_with('length'))
 
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-
   
   # reactive value used for the log messages
   log <- reactiveValues(msg = NULL)
@@ -53,7 +91,13 @@ shinyServer(function(input, output) {
     } else {
       # there is a commit message so save dataset and commit
       log$msg <- add_log("Saving titles dataset")
-      write.csv(titles, input$path, row.names=TRUE)
+      write.csv(titlesraw, input$path, row.names=TRUE)
+      log$msg <- add_log("Add metadata to git stage")
+      add(repo, metafile)
+      log$msg <- add_log("Commit changes")
+      commit(repo,input$msg)
+      log$msg <- add_log("push to remote")
+      push(repo)
     }
   })
   
