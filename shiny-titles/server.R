@@ -21,6 +21,10 @@
 # Utility functions:
 # 
 # Assumptions:
+# - AWS environment variables are defined:
+#   - AWS_ACCESS_KEY_ID
+#   - AWS_SECRET_ACCESS_KEY
+#   - AWS_DEFAULT_REGION
 # - titles.csv file exists in valid format (no checking done)
 # - file is in git repo and permissions exist to commit and push
 #
@@ -33,7 +37,6 @@
 # This is the server logic of a Shiny web application. You can run the
 # application by clicking 'Run App' above.
 #
-
 library(shiny)
 library(DT)
 library(dplyr)
@@ -50,10 +53,10 @@ metafile <- "/mnt/code/metadata/titles.csv"
 repo <- repository("/mnt/code")
 
 #load the metadata from the (git repo) file system
-titlesraw <- read.csv(file = metafile)
+#titlesraw <- read.csv(file = metafile)
 
 # Load the metadata from S3 bucket
-#titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
+titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
 #titles <- titlesraw %>%
 #  select(!starts_with('length'))
 
@@ -90,14 +93,19 @@ shinyServer(function(input, output) {
       showModal(noCommitDialog())
     } else {
       # there is a commit message so save dataset and commit
-      log$msg <- add_log("Saving titles dataset")
-      write.csv(titlesraw, input$path, row.names=TRUE)
-      log$msg <- add_log("Add metadata to git stage")
-      add(repo, metafile)
-      log$msg <- add_log("Commit changes")
-      commit(repo,input$msg)
-      log$msg <- add_log("push to remote")
-      push(repo)
+      # log$msg <- add_log("Saving titles dataset")
+      # write.csv(titlesraw, input$path, row.names=TRUE)
+      # log$msg <- add_log("Add metadata to git stage")
+      # add(repo, metafile)
+      # log$msg <- add_log("Commit changes")
+      # commit(repo,input$msg)
+      # log$msg <- add_log("push to remote")
+      # push(repo)
+      
+      # write to s3 bucket
+      log$msg <- add_log("Writing to S3 bucket")
+      s3write_using( titlesraw, FUN=write.csv, bucket="titles-metadata", object="Titles.csv")
+      log$msg <- add_log("Done")
     }
   })
   
