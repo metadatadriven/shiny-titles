@@ -47,11 +47,13 @@ shinyUI(
                         fluidPage(
                             mainPanel( DT::dataTableOutput("table"))
                         )),
-               tabPanel("Save", 
+               tabPanel("File", 
                         fluidPage(
                           textInput("path", "Local path", value = "/mnt/code/metadata/titles.csv"),
-                          textInput("msg", "Commit message"),
-                          actionButton("Sync", "Commit and Push"),
+                          textInput("s3uri", "S3 Bucket URI", value = "s3://titles-metadata/Titles.csv"),
+#                          textInput("msg", "Commit message"),
+                          actionButton("Sync", "Save to S3"),
+                          actionButton("Load", "Load from S3"),
                           verbatimTextOutput("info")
                         ))
                
