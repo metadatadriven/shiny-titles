@@ -17,11 +17,14 @@ shinyUI(
                         fluidPage(
                             mainPanel( DT::dataTableOutput("table"))
                         )),
-               tabPanel("Config", 
+               tabPanel("Save", 
                         fluidPage(
-                          textInput("s3url", "S3 Object url", value="s3://titles-metadata/Titles.csv"),
-                          actionButton("load", "Load Metadata")
+                          textInput("path", "Local path", value = "/mnt/code/metadata/Titles.csv"),
+                          textInput("msg", "Commit message"),
+                          actionButton("Sync", "Commit and Push"),
+                          verbatimTextOutput("info")
                         ))
+               
                
     )
 )

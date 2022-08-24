@@ -10,21 +10,58 @@
 library(shiny)
 library(DT)
 library(dplyr)
+library(aws.s3)
 
 # Load the metadata from S3 bucket
-# install.packages("aws.s3")
-library(aws.s3)
-titles <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
+titlesraw <- s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
 
-titles2 <- titles %>%
-  select(!starts_with('length'))
+#titles <- titlesraw %>%
+#  select(!starts_with('length'))
 
-data(iris)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-    
-    observeEvent(input$s3url, { 
-      output$table <- DT::renderDataTable(titles2 ) }  )
 
+  
+  # reactive value used for the log messages
+  log <- reactiveValues(msg = NULL)
+
+  # utility function
+  add_log <- function(message="no message") {
+    paste(log$msg, message, sep="\n")
+  }
+
+  # make the titles table editable in the UI  
+  output$table <- DT::renderDataTable({
+    datatable(titlesraw %>% 
+                select(!starts_with('length')), 
+              editable=TRUE)} ) 
+
+  # error dialog displayed when no commit message
+  noCommitDialog <- function() {
+    modalDialog(
+      title = "Oops!",
+      "You need to enter a commit message."
+    )
+  }
+  
+  
+  # process the Sync button on the Save tab
+  observeEvent( input$Sync, {
+    if (is.null(input$msg) || (input$msg == '')) {
+      showModal(noCommitDialog())
+    } else {
+      # there is a commit message so save dataset and commit
+      log$msg <- add_log("Saving titles dataset")
+      write.csv(titles, input$path, row.names=TRUE)
+    }
+  })
+  
+  
+  output$info <- renderText({
+    if(!is.null(log$msg))
+      log$msg
+  })
 })
+
+
