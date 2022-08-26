@@ -76,7 +76,7 @@ shinyServer(function(input, output) {
   # make the titles table editable in the UI  
   output$table <- DT::renderDataTable({
     datatable(titlesraw %>% 
-                select(!starts_with('length')), 
+                select(!starts_with('length') & !starts_with('X')), 
               selection = 'none',
               editable=TRUE)} ) 
 
