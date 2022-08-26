@@ -110,8 +110,8 @@ shinyServer(function(input, output) {
       showModal(noCommitDialog())
     } else {
       # there is a commit message so save dataset and commit
-      # log$msg <- add_log("Saving titles dataset")
-      # write.csv(titlesraw, input$path, row.names=TRUE)
+      log$msg <- add_log("Saving titles dataset")
+      write.csv(titlesraw, input$path, row.names=TRUE)
       # log$msg <- add_log("Add metadata to git stage")
       # add(repo, metafile)
       # log$msg <- add_log("Commit changes")
