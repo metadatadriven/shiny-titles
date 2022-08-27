@@ -1,5 +1,12 @@
 # Simple code snippet to produce a PDF
 
+# Add missing package
+#import subprocess
+#import sys
+
+#def install(package):
+#    subprocess.check_call([sys.executable, "-m", "pip", "install", reportlab])
+
 # Let's import the needed package
 from reportlab.pdfgen import canvas
 
