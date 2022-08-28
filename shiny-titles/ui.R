@@ -54,6 +54,7 @@ shinyUI(
 #                          textInput("msg", "Commit message"),
                           actionButton("Sync", "Save to S3"),
                           actionButton("Load", "Load from S3"),
+                          actionButton("Trigger", "Trigger"),
                           verbatimTextOutput("info")
                         ))
                

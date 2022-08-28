@@ -42,6 +42,7 @@ library(DT)
 library(dplyr)
 library(aws.s3)
 library(git2r)
+library(httr)
 
 # at startup..
 
@@ -128,7 +129,30 @@ shinyServer(function(input, output) {
     }
   })
   
+# Trigger execution using Domino API
+# ---------------------------------------------------------
+observeEvent( input$Trigger, {
+      # there is a commit message so save dataset and commit
+      log$msg <- add_log("Metadata Triggered Execution using Domino API")
+
+      # curl -X POST "https://se-sandbox.domino-eval.com/v4/jobs/start" 
+      #      -H  "accept: application/json" 
+      #      -H  "X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec" 
+      #      -H  "Content-Type: application/json" 
+      #      -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
+      response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
+                       add_headers(accept = 'application/json'),
+                       add_headers(X-Domino-Api-Key = '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
+                       body = list(projectId = '6308d5c9c92bbb395372f3dd', 
+                                   commandToRun = 'python-code/pdf-generator.py', 
+                                   title = 'Metadata Triggered Execution using Domino API'))
+      
+
+      log$msg <- add_log(content(response, "text"))
+  })
   
+  
+    
   output$info <- renderText({
     if(!is.null(log$msg))
       log$msg
