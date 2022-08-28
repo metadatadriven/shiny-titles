@@ -140,15 +140,17 @@ observeEvent( input$Trigger, {
       #      -H  "X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec" 
       #      -H  "Content-Type: application/json" 
       #      -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
-      response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
-                       add_headers(accept = 'application/json'),
-                       add_headers(X-Domino-Api-Key = '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
-                       body = list(projectId = '6308d5c9c92bbb395372f3dd', 
-                                   commandToRun = 'python-code/pdf-generator.py', 
-                                   title = 'Metadata Triggered Execution using Domino API'))
+      
+      # response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
+      #                  add_headers(accept = 'application/json'),
+      #                  add_headers(X-Domino-Api-Key = '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
+      #                  body = list(projectId = '6308d5c9c92bbb395372f3dd', 
+      #                              commandToRun = 'python-code/pdf-generator.py', 
+      #                              title = 'Metadata Triggered Execution using Domino API'))
       
 
-      log$msg <- add_log(content(response, "text"))
+      log$msg <- add_log("**Not Implemented Yet**")
+      # log$msg <- add_log(content(response, "text"))
   })
   
   
