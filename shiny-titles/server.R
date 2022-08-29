@@ -141,17 +141,20 @@ observeEvent( input$Trigger, {
       #      -H  "Content-Type: application/json" 
       #      -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
       
-      response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
-                        httr::add_headers('X-Domino-Api-Key', '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
-                        accept_json() ,
-                        content_type_json(),
-                        body = jsonlite::parse_json('{"projectId" : "6308d5c9c92bbb395372f3dd",
-                                    "commandToRun" : "python-code/pdf-generator.py",
-                                    "title" : "Metadata Triggered Execution using Domino API"}'),
-                       encode = "json")
-
-
-      log$msg <- add_log(content(response, "text"))
+      # response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
+      #                   httr::add_headers('X-Domino-Api-Key', '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
+      #                   accept_json() ,
+      #                   content_type_json(),
+      #                   body = jsonlite::parse_json('{"projectId" : "6308d5c9c92bbb395372f3dd",
+      #                               "commandToRun" : "python-code/pdf-generator.py",
+      #                               "title" : "Metadata Triggered Execution using Domino API"}'),
+      #                  encode = "json")
+      # log$msg <- add_log(content(response, "text"))
+      
+      
+      cmd <- "curl -X POST \"https://se-sandbox.domino-eval.com/v4/jobs/start\" -H  \"accept: application/json\" -H  \"X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec\" -H  \"Content-Type: application/json\" -d \"{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}\""
+      rx <- system(cmd)
+      log$msg <- add_log(rx)
       
 })
   
