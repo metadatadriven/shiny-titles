@@ -113,50 +113,48 @@ shinyServer(function(input, output) {
       # there is a commit message so save dataset and commit
       log$msg <- add_log("Saving titles dataset")
       write.csv(titlesraw, input$path, row.names=TRUE)
-      # log$msg <- add_log("Add metadata to git stage")
-      # add(repo, metafile)
-      # log$msg <- add_log("Commit changes")
-      # commit(repo,input$msg)
-      # log$msg <- add_log("push to remote")
-      # push(repo)
-      
+
       # write to s3 bucket
       log$msg <- add_log("Writing to S3 bucket")
-#      s3write_using( titlesraw, FUN=write.csv, bucket="titles-metadata", object="Titles.csv")
       s3write_using( titlesraw, FUN=write.csv, object=input$s3uri)
+
+      # Trigger execution using shell script (trigger.sh)
+      log$msg <- add_log("Metadata trigger execution using Domino API")
+      cmd <- "/mnt/code/shiny-titles/trigger.sh 2>&1"
+      rx <- system(cmd, intern=TRUE)
+      log$msg <- add_log(paste("return code: ", rx))
       
-      log$msg <- add_log("Done")
     }
   })
   
 # Trigger execution using Domino API
 # ---------------------------------------------------------
-observeEvent( input$Trigger, {
-      # there is a commit message so save dataset and commit
-      log$msg <- add_log("Metadata Triggered Execution using Domino API")
-
-      # curl -X POST "https://se-sandbox.domino-eval.com/v4/jobs/start" 
-      #      -H  "accept: application/json" 
-      #      -H  "X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec" 
-      #      -H  "Content-Type: application/json" 
-      #      -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
-      
-      # response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
-      #                   httr::add_headers('X-Domino-Api-Key', '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
-      #                   accept_json() ,
-      #                   content_type_json(),
-      #                   body = jsonlite::parse_json('{"projectId" : "6308d5c9c92bbb395372f3dd",
-      #                               "commandToRun" : "python-code/pdf-generator.py",
-      #                               "title" : "Metadata Triggered Execution using Domino API"}'),
-      #                  encode = "json")
-      # log$msg <- add_log(content(response, "text"))
-      
-      
-      cmd <- "curl -X POST \"https://se-sandbox.domino-eval.com/v4/jobs/start\" -H  \"accept: application/json\" -H  \"X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec\" -H  \"Content-Type: application/json\" -d \"{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}\""
-      rx <- system(cmd)
-      log$msg <- add_log(rx)
-      
-})
+# observeEvent( input$Trigger, {
+#       # there is a commit message so save dataset and commit
+#       log$msg <- add_log("Metadata Triggered Execution using Domino API")
+# 
+#       # curl -X POST "https://se-sandbox.domino-eval.com/v4/jobs/start" 
+#       #      -H  "accept: application/json" 
+#       #      -H  "X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec" 
+#       #      -H  "Content-Type: application/json" 
+#       #      -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
+#       
+#       # response <- POST("https://se-sandbox.domino-eval.com/v4/jobs/start",
+#       #                   httr::add_headers('X-Domino-Api-Key', '16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec'),
+#       #                   accept_json() ,
+#       #                   content_type_json(),
+#       #                   body = jsonlite::parse_json('{"projectId" : "6308d5c9c92bbb395372f3dd",
+#       #                               "commandToRun" : "python-code/pdf-generator.py",
+#       #                               "title" : "Metadata Triggered Execution using Domino API"}'),
+#       #                  encode = "json")
+#       # log$msg <- add_log(content(response, "text"))
+#       
+#       
+#       cmd <- "/mnt/code/shiny-titles/trigger.sh"
+#       rx <- system(cmd)
+#       log$msg <- add_log(rx)
+#       
+# })
   
   
     
