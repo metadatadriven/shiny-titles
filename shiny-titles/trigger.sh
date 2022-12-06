@@ -1,5 +1,5 @@
 #!/bin/bash
-curl -X POST "https://se-sandbox.domino-eval.com/v4/jobs/start" \
+curl -X POST "https://demo2.dominodatalab.com/v4/jobs/start" \
      -H  "accept: application/json" \
-     -H  "X-Domino-Api-Key: 16c22313dd5f14d961595f6b7855b2a8312fa2b010bd51b303fe9959a982fdec" \
-     -H  "Content-Type: application/json" -d "{\"projectId\":\"6308d5c9c92bbb395372f3dd\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
+     -H  "X-Domino-Api-Key: af05a6b443daa1fab20b5713f5657977f9d376e23e6efe6e3e061c70258fee6b" \
+     -H  "Content-Type: application/json" -d "{\"projectId\":\"638f026834e24c3be154979f\",\"commandToRun\":\"python-code/pdf-generator.py\",\"title\":\"Metadata Triggered Execution using Domino API\"}"
