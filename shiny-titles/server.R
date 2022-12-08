@@ -71,7 +71,7 @@ shinyServer(function(input, output) {
   }
 
   # Load the CSV file from S3
-  titlesraw = s3read_using(FUN=read.csv, object="s3://titles-metadata/Titles.csv")
+  titlesraw = s3read_using(FUN=read.csv, object="s3://domino-sce-demonstration/Titles.csv")
   
   
   # make the titles table editable in the UI  
@@ -155,13 +155,8 @@ shinyServer(function(input, output) {
 #       log$msg <- add_log(rx)
 #       
 # })
-  
-  
-    
   output$info <- renderText({
     if(!is.null(log$msg))
       log$msg
   })
 })
-
-
