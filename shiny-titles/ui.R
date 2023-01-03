@@ -48,8 +48,8 @@ shinyUI(
                         )),
                tabPanel("File", 
                         fluidPage(
-                          textInput("path", "Local path", value = "/mnt/artifacts/titles.csv"),
-                          textInput("s3uri", "S3 Bucket URI", value = "s3://titles-metadata/Titles.csv"),
+                          textInput("path", "Local path", value = "/mnt/artifacts/Titles.csv"),
+                          textInput("s3uri", "S3 Bucket URI", value = "s3://domino-sce-demonstration/Titles.csv"),
                           actionButton("Sync", "Save to S3"),
                           actionButton("Load", "Load from S3"),
 #                          actionButton("Trigger", "Trigger"),
